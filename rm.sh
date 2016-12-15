@@ -1,24 +1,20 @@
 #!/bin/bash
 
-function loge() {
+loge() {
     echo "[ERROR] $1"
     exit 1
 }
 
-function logw() {
+logw() {
     echo "[WARNING] $1"
 }
 
-function remove() {
-    SRC_PATH=$(readlink -f $1)
+remove() {
+    SRC_PATH=$(readlink -f "$1")
     SRC_NAME=$(basename "$SRC_PATH")
     DEST_DIR=$HOME/.Trash/$(date "+%Y-%m-%d")
     DEST_NAME=${SRC_NAME}
     DEST_PATH=${DEST_DIR}/${DEST_NAME}
-
-    if [[ ! -e "$SRC_PATH" ]]; then
-        loge "$SRC_PATH not exist!"
-    fi
 
     if [[ ! -d "$DEST_DIR" ]]; then
         install -m 755 -d "$DEST_DIR"
@@ -39,6 +35,12 @@ if [[ $# -lt 1 ]]; then
     exit 1
 fi
 
-for i in $@; do
+for i do
+    if [[ ! -e "$i" ]]; then
+        loge "$i not exist!"
+    fi
+done
+
+for i do
     remove "$i"
 done
