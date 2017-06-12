@@ -1,0 +1,67 @@
+#!/usr/bin/env python
+# 4/24/17
+
+import os
+import sys
+import glob
+import datetime
+import re
+import subprocess
+
+def check(path, v):
+    v = os.path.basename(v)
+    files = glob.glob(os.path.join(path, v+'*'))
+    count = 0
+    for f in files:
+        f = os.path.basename(f)[len(v):]
+        if len(f) == 0 or re.match('^_[0-9]{3}$', f) is not None:
+            count += 1
+    if count == 0:
+        return os.path.join(path, v)
+    else:
+        return os.path.join(path, v+'_%03d' % count)
+
+def colord(s, color='green'):
+    d = {
+        'green': '\033[32m',
+        'red': '\033[31m',
+        'reset': '\033[m'
+    }
+    return d.get(color, d['green'])+s+d['reset']
+
+def move(src, dest):
+    if os.path.exists(dest):
+        print('%s %s already exist!' % (colord('[ERROR]'), dest))
+        sys.exit(1)
+    sys.stdout.write('%s %s %s %s\n' %
+                    (colord('[REMOVE]'), src, colord('-->'), dest))
+    subprocess.check_call('mv "%s" "%s"' % (v[0], v[1]), shell=True)
+
+if __name__ == '__main__':
+    ROOT = os.path.join(os.environ['HOME'], '.Trash')
+    today = datetime.datetime.today().strftime('%Y-%m-%d')
+    DEST = os.path.join(ROOT, today)
+
+    if not os.path.exists(DEST):
+        subprocess.check_call('mkdir -p %s' % DEST, shell=True)
+
+    jobs = []
+    error = False
+    for v in sys.argv[1:]:
+        if len(v) == 0 or v is None:
+            continue
+        elif v[0] == '-':
+            print('%s Skip %s' % (colord('[WARNING]'), v))
+            continue
+        elif not os.path.exists(v):
+            print('%s %s not exist!' % (colord('[ERROR]'), v))
+            error = True
+        else:
+            v = os.path.abspath(v)
+            jobs.append((v, check(DEST, v)))
+
+    if error:
+        sys.exit(1)
+
+    for v in jobs:
+        move(v[0], v[1])
