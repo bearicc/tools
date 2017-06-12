@@ -1,0 +1,87 @@
+# ------------------------------------------------------------------------------
+# git
+
+# Show log history about a specific file.
+git log -p filename
+
+# Clone single branch.
+git clone -b <clone_branch> --single-branch <clone_url>
+
+# ------------------------------------------------------------------------------
+# nmap
+
+# Ping scans the network, listing machines that respond to ping.
+nmap -sP x.x.x.x/24
+
+# Scan port 22.
+nmap -sV -p 22 x.x.x.x/24
+
+# ------------------------------------------------------------------------------
+# iptables
+
+# Flush chain in table.
+-t <table> -F <chain>
+
+# ------------------------------------------------------------------------------
+# mac port forwarding
+
+# Display current rules
+pfctl -s nat
+
+# Set rule
+echo "rdr pass inet proto tcp from any to any port 80 -> 127.0.0.1 port 9790" | \
+sudo pfctl -ef -
+
+# Remove rules
+pfctl -F all -f /etc/pf.conf
+
+# ------------------------------------------------------------------------------
+# ssh
+
+# ssh avoid broken pipe.
+Host *
+ServerAliveInterval 120
+
+# ssh including password
+sshpass -p <passwd> ssh -o StrictHostKeyChecking=no <username>@<host> <cmd>
+
+# ------------------------------------------------------------------------------
+# Other
+
+# Compile opengl in mac.
+g++ -lglfw -lGLEW -framework OpenGL -I/opt/local/include -L/opt/local/lib -o test test.cpp
+
+# Check certificate.
+openssl x509 -in XXX.pem -text -noout
+
+# pip ssl issue.
+pip install --trusted-host pypi.python.org pip==xxx
+
+# Create and apply a patch.
+diff -Naur old_file new_file > output.patch
+patch -Np1 -i output.patch
+
+# Convert virtualbox to vagrant box.
+VBoxManage list vms
+vagrant package --base  --output xxx.box
+vagrant box add xxx.box --name xxx
+Vagrant.configure("2") do |config|
+    config.vm.box = "xxx"
+    # ...
+end
+
+# Network tools
+ifconfig
+ping
+traceroute
+netstat
+dig
+nslookup
+route
+host
+arp
+hostname
+wireshark
+
+# Sync with network time.
+timedatectl set-ntp true
